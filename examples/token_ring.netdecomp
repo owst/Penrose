@@ -1,0 +1,34 @@
+-- From: SAT-Solving the Coverability Problem for Petri Nets by Abdulla et al.
+-- "A more complicated token ring system"
+
+NET readyProcess
+PLACES [ <working, 0, 1>
+       , <givenToken, 0, 0>
+       , <wantToken, 1, 0>
+       , <sync, 0, 0>
+       ]
+LBOUNDS [next]
+RBOUNDS [prev]
+TRANS
+    { -- When we are working, we can stop, releasing the token.
+        {working>, >givenToken, >sync }
+      -- We can decide to try to start working again.
+      , {givenToken>, >wantToken}
+      -- We can take the token, and start working again.
+      , {wantToken>, sync>, >working}
+      -- The next process can take the token.
+      , {sync>, next}
+      -- The previous process can replace the token.
+      , {prev, >sync}
+    }
+
+NET injectToken
+PLACES [ <gotToken, 1, 0> ]
+LBOUNDS [ output ]
+RBOUNDS [ input ]
+TRANS { {input, output}, {gotToken>, output} }
+
+WIRING
+IMPORT id, eta, epsilon
+bind procs = n_sequence read readyProcess in
+eta ; (id * (procs ; injectToken)) ; epsilon

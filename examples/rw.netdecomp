@@ -1,0 +1,76 @@
+-- RW: readers/writers problem
+
+NET controller
+PLACES [ <idle, 1, 0>
+       , <read, 0, 1>
+       , <write, 0, 1>]
+LBOUNDS [readstart, readend, anyReading, anyNotReading, noneReading]
+RBOUNDS [writestart, writeend]
+TRANS { {idle>, readstart, anyNotReading, >read}
+      -- Until every reader is reading, more can start
+      , {read>, readstart, anyNotReading, >read}
+      -- While there are readers reading, allow them to stop
+      , {read>, anyReading, readend, >read}
+      -- When every reader has stopped, become idle
+      , {read>, noneReading, >idle}
+      -- A writer can only start when noone is reading or writing
+      , {idle>, writestart, >write}
+      , {write>, writeend, >idle}
+      }
+
+-- A writer attempts to start writing, before stopping.
+NET writer
+PLACES [ <ready, 1, 0>
+       , <writing, 0, 1>
+       ]
+LBOUNDS [start, stop]
+RBOUNDS []
+TRANS { {ready>, start, >writing}
+      , {writing>, stop, >ready}
+      }
+
+-- A reader attempts to start reading, before stopping. It's status is reported
+-- by isreading and notreading(1/2).
+NET reader
+PLACES [ <ready, 1, 0>
+       , <reading, 0, 1>
+       ]
+LBOUNDS []
+RBOUNDS [start, stop, isreading, notreading1, notreading2]
+TRANS { {ready>, start, >reading}
+      , {reading>, stop, >ready}
+      , {isreading, reading?}
+      , {notreading1, ready?}
+      , {notreading2, ready?}
+      }
+
+-- A readerLink duplexes inputs into outputs. Readers output two copies of
+-- notreading. We OR one and AND the other, so the output after a chain of
+-- reader/readerLinks of one is "anyNotReading" and the other is
+-- "allNotReading".
+NET readerLink
+PLACES []
+LBOUNDS [a1,b1,c1,d1,e1 ,a2,b2,c2,d2,e2]
+RBOUNDS [aOr,bOr,cOr,dOr,eAnd]
+TRANS { {a1,aOr}, {a2,aOr}
+      , {b1,bOr}, {b2,bOr}
+      , {c1,cOr}, {c2,cOr}
+      , {d1,dOr}, {d2,dOr}
+      , {e1,e2,eAnd}
+      }
+
+-- A writerLink duplexes writer's starting/stopping signals.
+NET writerLink
+PLACES []
+LBOUNDS [a,b]
+RBOUNDS [a1,b1,a2,b2]
+TRANS { {a1,a}, {a2,a}
+      , {b1,b}, {b2,b}
+      }
+
+WIRING
+IMPORT id, id2
+bind id5 = id2 * id2 * id in
+bind readers = n_sequence read ((reader * id5) ; readerLink) in
+bind writers = n_sequence read (writerLink ; (writer * id2)) in
+readers ; controller ; writers

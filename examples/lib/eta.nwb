@@ -1,0 +1,5 @@
+NET eta
+PLACES []
+LBOUNDS []
+RBOUNDS [in, out]
+TRANS { {in, out} }

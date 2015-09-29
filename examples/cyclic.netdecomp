@@ -1,0 +1,49 @@
+-- Cyclic: Milner's cyclic scheduler
+
+-- Marking checks if all tasks can be started at once, which should be
+-- possible, since each scheduler starts its task in turn (and we dont model
+-- how long each task takes...)
+
+NET task
+PLACES [ <init, 1, 0>
+       , <started, 0, 1>
+       ]
+LBOUNDS [ start, finish ]
+RBOUNDS []
+TRANS { {init>, start, >started}
+      , {started>, finish, >init}
+      }
+
+NET scheduler
+PLACES [ <init, 1, 0>
+       , <gotSignal, 0, *>
+       , <signalledNext, 0, *>
+       , <finishedWaitingForSignal, 0, *>
+       , <signalledWaitingForFinish, 0, *>
+       ]
+LBOUNDS [ signalMe ]
+RBOUNDS [ startTask, taskFinished, signalNext ]
+TRANS { -- Receive a start signal...
+        {init>, signalMe, >gotSignal}
+       -- Start our task and send the signal on to the next scheduler.
+      , {gotSignal>, startTask, signalNext, >signalledNext}
+        -- We can receive the task finished, or start again signals in either
+        -- order, but we must receive both before starting again.
+      , {signalledNext>, taskFinished, >finishedWaitingForSignal}
+      , {signalledNext>, signalMe, >signalledWaitingForFinish}
+      , {finishedWaitingForSignal>, signalMe, >gotSignal}
+      , {signalledWaitingForFinish>, taskFinished, >gotSignal}
+      }
+
+NET injector
+PLACES [<tok, 1, 0>]
+LBOUNDS [in]
+RBOUNDS [out]
+TRANS { {tok>, out}
+      , {in, out} }
+
+WIRING
+IMPORT id, eta, epsilon
+bind schedTask = scheduler ; (task * id) in
+bind tasks = n_sequence read schedTask in
+eta ; (injector * id) ; (tasks * id) ; epsilon

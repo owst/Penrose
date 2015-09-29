@@ -1,0 +1,5 @@
+NET id
+PLACES []
+LBOUNDS [in]
+RBOUNDS [out]
+TRANS { {in, out} }

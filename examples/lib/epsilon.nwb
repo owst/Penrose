@@ -1,0 +1,5 @@
+NET epsilon
+PLACES []
+LBOUNDS [in, out]
+RBOUNDS []
+TRANS { {in, out} }

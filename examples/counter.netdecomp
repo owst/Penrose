@@ -1,0 +1,41 @@
+NET INTERLEAVED counter
+PLACES [ <zero, 1, 0>
+       , <one, 0, 1>
+       ]
+LBOUNDS [linc, ldec, lnotfull, lfull]
+RBOUNDS [rinc, rdec, rnotfull, rfull]
+TRANS
+    { { zero>, linc, >one }
+    , { one>, rinc, >zero }
+    , { one>, ldec, >zero }
+    , { ldec, rdec }
+    , { lnotfull, zero? }
+    , { lnotfull, rnotfull }
+    , { lfull, one?, rfull }
+    }
+
+NET counterTerm
+PLACES []
+LBOUNDS [inc, dec, notfull, full]
+RBOUNDS []
+TRANS
+    { { full }
+    }
+
+NET tester
+PLACES [ <ready, 1, 0>
+       , <wasntFull, 0, *>
+       , <wasFull, 0, 1>
+       ]
+LBOUNDS []
+RBOUNDS [inc, dec, notfull, full]
+TRANS 
+    { {ready>, notfull, >wasntFull}
+    , {wasntFull>, inc, >ready}
+    , {ready>, full, >wasFull}
+    }
+
+WIRING
+bind n = read in
+bind counters = n_sequence n counter ; counterTerm in
+tester ; counters

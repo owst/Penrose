@@ -1,0 +1,22 @@
+NET leftend
+PLACES []
+LBOUNDS []
+RBOUNDS [consume]
+TRANS { {consume} }
+
+NET rightend
+PLACES []
+LBOUNDS [consume]
+RBOUNDS []
+TRANS { {consume} }
+
+NET opb
+PLACES [ <full,1,0>, <empty,0,1> ]
+LBOUNDS [in]
+RBOUNDS [out]
+TRANS
+    { {in,empty>,>full}
+    , {out,full>,>empty}
+    }
+WIRING
+intcase read leftend (\x : Net 0 1 . x ; opb) ; rightend

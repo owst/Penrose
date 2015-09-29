@@ -1,0 +1,46 @@
+NET lend
+PLACES []
+LBOUNDS []
+RBOUNDS [a, b]
+TRANS { }
+
+NET inject
+PLACES [ <p, 1, 0> ]
+LBOUNDS [l1, l2]
+RBOUNDS [r1, r2]
+TRANS { {l1, r1}, {l2, r2}, {p>, r2} }
+
+NET rend
+PLACES []
+LBOUNDS [a, b]
+RBOUNDS []
+TRANS {}
+
+NET node
+PLACES [ <p, 0, 0> ]
+LBOUNDS [l1, l2]
+RBOUNDS [r1, r2]
+TRANS { {l1, r1}
+      , {l2, r2}
+      , {>p, r1}
+      , {>p, l2}
+      , {r2, p>} 
+      , {l1, p>}
+      }
+
+-- wnode wants a token
+NET wnode
+PLACES [ <p, 0, 1> ]
+LBOUNDS [l1, l2]
+RBOUNDS [r1, r2]
+TRANS { {l1, r1}
+      , {l2, r2}
+      , {>p, r1}
+      , {>p, l2}
+      , {r2, p>} 
+      , {l1, p>}
+      }
+
+WIRING
+bind nodes = intcase read wnode (\x : Net 2 2 . node ; x) in
+lend ; inject ; nodes ; rend

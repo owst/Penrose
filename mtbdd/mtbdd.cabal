@@ -1,0 +1,50 @@
+Name: mtbdd
+Version: 0.12
+Cabal-Version: >= 1.8
+Build-type: Simple
+Synopsis: Multi-Terminal Ordered Reduced Binary Decision Diagrams
+Description: eonstruct, combine and query MTBDDs; an efficient representation
+             used in model checking. Based on Johannes Waldmann's obdd library.
+category: Logic
+License: GPL
+License-file: LICENSE
+Author: Owen Stephens
+Maintainer: Owen Stephens <owen@owenstephens.co.uk>
+
+library
+    Build-Depends: base==4.*,
+                   random,
+                   mtl,
+                   containers>=0.5,
+                   array,
+                   deepseq >= 1.2,
+                   transformers >= 0.1,
+                   lens >= 3 && < 4.1,
+                   parallel >= 2.2
+    Hs-Source-Dirs: src
+    Exposed-Modules: MTBDD MTBDD.Internals MTBDD.Make MTBDD.Operation
+    Other-Modules: MTBDD.IntIntMap
+    ghc-options: -funbox-strict-fields -Wall
+
+Test-Suite tests
+    type: exitcode-stdio-1.0
+
+    main-is: TestMain.hs
+
+    hs-source-dirs: test
+
+    ghc-options: -Wall
+
+    build-depends: mtbdd,
+                   base >= 4,
+                   test-framework >= 0.4,
+                   test-framework-hunit >= 0.3,
+                   HUnit >= 1.2,
+                   random,
+                   mtl,
+                   containers>=0.5,
+                   array,
+                   deepseq >= 1.2,
+                   transformers >= 0.1,
+                   lens >= 3 && < 4.1,
+                   parallel >= 2.2

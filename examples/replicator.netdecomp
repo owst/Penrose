@@ -1,0 +1,34 @@
+-- A chain of "replicator" nets, which can each output an unbounded number of
+-- tokens on their right boundary, having received a single token on their left
+-- boundary.
+NET replicator
+PLACES
+    [ <ready,0,0>
+    , <sent,0,1>
+    ]
+LBOUNDS [in]
+RBOUNDS [out]
+TRANS
+    { {in, >ready}
+    , {ready>, out, >sent}
+    , {sent>, >ready}
+    }
+
+-- Starts the chain of replicators by supplying a single token, once.
+NET addTok
+PLACES [ <ready, 1, 0> ]
+LBOUNDS []
+RBOUNDS [out]
+TRANS { {ready>, out} }
+
+-- Checks that the chain of replicators can output at least one token
+NET takeTok
+PLACES [ <got, 0, 1> ]
+LBOUNDS [input]
+RBOUNDS []
+TRANS { {input, >got} }
+
+WIRING
+IMPORT id
+bind repls = n_sequence read replicator in
+addTok ; repls ; takeTok

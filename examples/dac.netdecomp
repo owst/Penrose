@@ -1,0 +1,42 @@
+-- DAC: Divide and conquer computation
+NET worker
+PLACES [ <init,1,*>
+       , <beenForked,0,*>
+       , <forkedChild,0,*>
+       , <joinedChild,0,1>
+       , <done,0,*>
+       ]
+LBOUNDS [ forkMe
+        , joinMe
+        ]
+RBOUNDS [ forkChild
+        , joinChild
+        ]
+TRANS { {init>, forkMe, >beenForked}
+      , {beenForked>, >joinedChild} -- Can choose not to fork child
+      , {beenForked>, forkChild, >forkedChild}
+      , {forkedChild>, joinChild, >joinedChild}
+      , {joinedChild>, joinMe, >done}
+      }
+
+NET terminator
+PLACES []
+LBOUNDS [fork, join]
+RBOUNDS []
+TRANS { }
+
+NET controller
+PLACES [ <init,1,*>
+       , <forked,0,1>
+       , <done,0,*>
+       ]
+LBOUNDS []
+RBOUNDS [ forkChild
+        , joinChild
+        ]
+TRANS { {init>, forkChild, >forked}
+      , {forked>, joinChild, >done}
+      }
+
+WIRING
+controller ; n_sequence read worker ; terminator

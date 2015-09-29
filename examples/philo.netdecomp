@@ -1,0 +1,51 @@
+NET fk
+PLACES [ <present, 1, 0>, <taken, 0, 1> ]
+LBOUNDS [takel, putl]
+RBOUNDS [taker, putr]
+TRANS
+    { {present>, takel, >taken}
+    , {present>, taker, >taken}
+    , {taken>, putl, >present}
+    , {taken>, putr, >present}
+    }
+
+NET ph
+PLACES
+    [ <none,1,*>
+    , <left,0,*>
+    , <right,0,*>
+    , <both,0,*>
+    ]
+LBOUNDS [takel, putl]
+RBOUNDS [taker, putr]
+TRANS
+    { {none>, takel, >left}
+    , {none>, taker, >right}
+    , {left>, taker, >both}
+    , {right>, takel, >both}
+    , {both>, putl, putr, >none}
+    }
+
+NET lend
+PLACES []
+LBOUNDS []
+RBOUNDS [ a, b, c, d ]
+TRANS
+    { {a, d}
+    , {b, c}
+    }
+
+NET rend
+PLACES []
+LBOUNDS [ a, b, c, d ]
+RBOUNDS []
+TRANS
+    { {a, d}
+    , {b, c}
+    }
+
+WIRING
+IMPORT id2
+bind phfk = ph ; fk in
+bind phfks = n_sequence read phfk in
+lend ; (id2 * phfks) ; rend

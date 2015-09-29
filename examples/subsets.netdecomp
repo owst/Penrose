@@ -1,0 +1,23 @@
+NET lend
+PLACES [ <p, 1, 0> ]
+LBOUNDS []
+RBOUNDS [out]
+TRANS { {p>, out} }
+
+NET term
+PLACES []
+LBOUNDS [in]
+RBOUNDS []
+TRANS { {in} }
+
+NET node
+PLACES [ <p, 0, 1> ]
+LBOUNDS [in]
+RBOUNDS [out]
+TRANS { {in, out}
+      , {in, >p}
+      , {in, out, >p}
+      }
+
+WIRING
+lend ; n_sequence read node ; term

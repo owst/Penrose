@@ -1,0 +1,93 @@
+-- Over: overtake protocol (CAV'93)
+--
+-- Marking checks for all cars (clients) to be overtaking.
+
+NET client
+PLACES [ <init,1,*>
+       , <tryRearLock,0,*>
+       , <rearLocked,0,*>
+       , <tryFrontLock,0,*>
+       , <frontBusy,0,*>
+       , <frontLocked,0,1>
+       , <unlockedRear,0,*>
+       ]
+LBOUNDS [unlockRear,lockRear,rearFail,rearOk]
+RBOUNDS [unlockFront,lockFront,frontFail,frontOk]
+TRANS
+    { {init>, lockRear, >tryRearLock}
+    , {tryRearLock>, rearFail, >init}
+    , {tryRearLock>, rearOk, >rearLocked}
+    , {rearLocked>, lockFront, >tryFrontLock}
+    , {tryFrontLock>, frontFail, >frontBusy}
+    , {frontBusy>, unlockRear, >init}
+    , {tryFrontLock>, frontOk, >frontLocked} -- Abstract over pass or not.
+    , {frontLocked>, unlockRear, >unlockedRear}
+    , {unlockedRear>, unlockFront, >init}
+    }
+
+NET lock
+PLACES [ <unlocked,1,*>
+       , <lLocked,0,*>
+       , <rLocked,0,*> 
+       ]
+LBOUNDS [lUnlock, lLock, lCantLock]
+RBOUNDS [rUnlock, rLock, rCantLock]
+TRANS
+    { {unlocked>, lLock, >lLocked}
+    , {rLocked?, lCantLock}
+    , {lLocked>, lUnlock, >unlocked}
+
+    , {unlocked>, rLock, >rLocked}
+    , {lLocked?, rCantLock}
+    , {rLocked>, rUnlock, >unlocked}
+    }
+
+NET lLockInterface
+PLACES [ <init,1,*>
+       , <requested,0,*>
+       ]
+LBOUNDS [unlock, lock, fail, ok]
+RBOUNDS [doUnlock, doLock, cantLock]
+TRANS
+    { {unlock, doUnlock}
+    , {init>, lock, >requested}
+      -- Can't take lock
+    , {requested>, fail, cantLock, >init}
+      -- Locked succesfully
+    , {requested>, ok, doLock, >init}
+    }
+
+-- TODO: can we include a "reflect" primitive to do this swap automatically?
+NET rLockInterface
+PLACES [ <init,1,*>
+       , <requested,0,*>
+       ]
+LBOUNDS [doUnlock, doLock, cantLock]
+RBOUNDS [unlock, lock, fail, ok]
+TRANS
+    { {unlock, doUnlock}
+    , {init>, lock, >requested}
+      -- Can't take lock
+    , {requested>, cantLock, fail, >init}
+      -- Locked succesfully
+    , {requested>, doLock, ok, >init}
+    }
+
+-- We don't need to the left most boundaries of the first lock.
+NET lterminator
+PLACES []
+LBOUNDS []
+RBOUNDS [1,2,3,4]
+TRANS {}
+
+-- ... or the right-most boundaries of the last lock.
+NET rterminator
+PLACES []
+LBOUNDS [1,2,3,4]
+RBOUNDS []
+TRANS {}
+
+WIRING
+bind iLock = lLockInterface ; lock ; rLockInterface in
+bind lockedClient = iLock ; client in
+lterminator ; intcase read (iLock ; rterminator) (\x : Net 4 0 . lockedClient ; x) 

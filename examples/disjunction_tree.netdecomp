@@ -1,0 +1,37 @@
+NET root
+PLACES [<root, 1, 0>]
+LBOUNDS []
+RBOUNDS [out]
+TRANS { {root>, out} }
+
+NET leaf
+PLACES [<node, 0, 1>]
+LBOUNDS [in]
+RBOUNDS [out]
+TRANS { {in, >node}, {in, out} }
+
+NET term
+PLACES []
+LBOUNDS [in]
+RBOUNDS []
+TRANS { }
+
+NET iNode
+PLACES [<node, 0, 0>]
+LBOUNDS [in]
+RBOUNDS [outWider, outDeeper]
+TRANS { {in, >node}, {in, outWider}, {node>, outDeeper} }
+
+WIRING
+IMPORT id
+bind n = read in
+bind k = read in
+bind lvs = n_sequence n leaf ; term in
+bind addSubTree = \st : Net 1 0 . n_sequence n (iNode ; (id * st)) ; term in 
+bind makeInternal = \k : Int . intcase k lvs addSubTree in
+root ; makeInternal (k - 1) 
+
+-- TODO: With the marking that tries to place a single token in each leaf
+-- place, this is superbly innefficient - it generates *enormous* NFAs even for
+-- small n/k (e.g. for 2,3 we encounter a 16384 (2^14) state NFA) which makes
+-- crossNFA (for composition) incredibly slow.

@@ -1,0 +1,35 @@
+NET chosen
+PLACES [ <init, 0, 0>, <chosen, 0, 1> ]
+LBOUNDS [ in ]
+RBOUNDS [ out ]
+TRANS { { in, >init }
+      , { init>, out }
+      , { init>, >chosen, out }
+      }
+
+NET notchosen
+PLACES [ <init, 0, 0>, <chosen, 0, 0> ]
+LBOUNDS [ in ]
+RBOUNDS [ out ]
+TRANS { { in, >init }
+      , { init>, out }
+      , { init>, >chosen, out }
+      }
+
+NET addToken
+PLACES [ <tok, 1, 0> ]
+LBOUNDS []
+RBOUNDS [ out ]
+TRANS { {tok>, out} }
+
+NET rTerm
+PLACES []
+LBOUNDS [ in ]
+RBOUNDS []
+TRANS { {in} }
+
+WIRING
+IMPORT id
+bind yesNo = chosen ; notchosen in
+bind choices = intcase read rTerm (\x : Net 1 0 . yesNo ; x) in
+addToken ; choices

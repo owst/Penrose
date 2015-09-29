@@ -1,0 +1,5 @@
+NET opbEmpty
+PLACES [ <buf, 0, 0> ]
+LBOUNDS [in]
+RBOUNDS [out]
+TRANS { {in, >buf}, {buf>, out} }

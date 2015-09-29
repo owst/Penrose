@@ -1,0 +1,40 @@
+-- Hartstone: Hartstone program - starts n processes in some order, and stops
+-- them in the same order.
+
+-- Marking checks if all tasks can be working
+
+NET task
+PLACES [ <stopped, 1, *>
+       , <started, 0, 1>
+       ]
+LBOUNDS [ startMe, stopMe ]
+RBOUNDS []
+TRANS { {stopped>, startMe, >started}
+      , {started>, stopMe, >stopped}
+      }
+
+NET controller
+PLACES [ <readyToStart, 1, *>
+       , <readyToStop, 0, *>
+       ]
+LBOUNDS [ reqIn ]
+RBOUNDS [ startTask, stopTask, reqOut ]
+TRANS { {readyToStart>, reqIn, startTask, reqOut, >readyToStop}
+      , {readyToStop>, reqIn, stopTask, reqOut, >readyToStart}
+      }
+
+NET master
+PLACES [ <ready, 1,*>
+       , <started,0,*>
+       ]
+LBOUNDS [gonearound]
+RBOUNDS [request]
+TRANS { {ready>, request, >started}
+      , {started>, gonearound, >ready}
+      }
+
+WIRING
+IMPORT id, epsilon, eta, opbEmpty
+bind contTask = opbEmpty ; controller ; (task * id) in
+bind contTasks = n_sequence read contTask in
+eta ; ((master ; contTasks) * id) ; epsilon
