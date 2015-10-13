@@ -13,7 +13,7 @@
 
 1. run `cd PATH_TO_PENROSE_REPOSITORY`
 2. run `cabal sandbox init`
-3. run `cabal sandbox add-source mtbb`
+3. run `cabal sandbox add-source mtbdd`
 4. run `cabal install --only-dependencies --enable-tests --enable-benchmarks`
 5. run `cabal configure && cabal build`
 
