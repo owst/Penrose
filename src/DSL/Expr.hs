@@ -12,10 +12,10 @@ module DSL.Expr
     , TypeCheckError(..)
     ) where
 
-import Control.Applicative ( (<$>) )
+import Control.Applicative ( (<$>), (<*>) )
 import Control.Monad ( when )
 import Control.Monad.Trans ( lift )
-import Control.Monad.Trans.Reader ( ReaderT, runReaderT )
+import Control.Monad.Trans.Reader ( ReaderT, runReaderT, Reader, runReader )
 import Control.Monad.Reader ( local, ask )
 import Data.Foldable ( Foldable )
 import Data.Traversable ( Traversable )
@@ -174,7 +174,9 @@ checkType getBounds term = runReaderT (checkType' term) emptyContext
             (_, netTy) <- checkType' net
             let varExpr = SEVar . VarId
                 -- We are placing the net inside a bind, so we must offset
-                -- any vars in expr net to take account of the bound variable
+                -- any free vars in expr net to take account of the bound variable
+                -- We use a pair of binds so that the num/net expressions are only evaluated once
+                -- when evaluating the IntCase.
                 dsExpr = SEBind num $
                                SEBind (offsetVarsBy 1 net) $
                                      SEIntCase (SEBin Sub (varExpr 1) (SENum 1))
@@ -204,18 +206,31 @@ checkType getBounds term = runReaderT (checkType' term) emptyContext
         (SETen e1 e2) -> checkTensor e1 e2
 
     -- Ugh, ugly!
-    offsetVarsBy n = go
+    -- We use a Reader context to track the number of binders encountered, any variables that are
+    -- greater than this number are incremented (since they are free).
+    offsetVarsBy n se = runReader (go se) 0
       where
-        go (SEVar (VarId x)) = SEVar (VarId $ x + n)
-        go (SEIntCase se1 se2 se3) = SEIntCase (go se1) (go se2) (go se3)
-        go (SENSequence se1 se2) = SENSequence (go se1) (go se2)
-        go (SEBin b se1 se2) = SEBin b (go se1) (go se2)
-        go (SEApp se1 se2) = SEApp (go se1) (go se2)
-        go (SELam t se1) = SELam t (go se1)
-        go (SEBind se1 se2) = SEBind (go se1) (go se2)
-        go (SESeq se1 se2) = SESeq (go se1) (go se2)
-        go (SETen se1 se2) = SETen (go se1) (go se2)
-        go x = x
+        go :: SugarExpr t -> Reader Int (SugarExpr t)
+        go (SEVar (VarId x)) = do
+            binderCount <- ask
+            let varOffset = if x < binderCount then 0 else n
+            return $ SEVar (VarId $ x + varOffset)
+        go (SEIntCase se1 se2 se3) = SEIntCase <$> go se1 <*> go se2 <*> go se3
+        go (SENSequence se1 se2) = SENSequence <$> go se1 <*> go se2
+        go (SEBin b se1 se2) = SEBin b <$> go se1 <*> go se2
+        go (SEApp se1 se2) = SEApp <$> go se1 <*> go se2
+        go (SELam t se1) = do
+            offsetBody <- local (+ 1) (go se1)
+            return $ SELam t offsetBody
+        go (SEBind se1 se2) = do
+            offsetBoundExpr <- go se1
+            -- We do not have recursive bindings - only the body is offset with an increased binder
+            -- count
+            offsetBody <- local (+ 1) (go se2)
+            return $ SEBind offsetBoundExpr offsetBody
+        go (SESeq se1 se2) = SESeq <$> go se1 <*> go se2
+        go (SETen se1 se2) = SETen <$> go se1 <*> go se2
+        go x = return x
 
     getNetType net = return $ case net of
             (SEConstant (_, (_, NetWithBoundaries l r _ _ _ _))) -> TyArr l r

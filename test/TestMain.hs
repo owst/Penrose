@@ -59,7 +59,7 @@ import DSL.ComponentsAndWiringParser ( ComponentsAndWiring(..)
                                      , WiringDefinition(..) )
 import DSL.ProcessParse ( lookupNames )
 import DSL.RawExprParser ( parseRawExpr )
-import DSL.Expr ( Type(..), checkType, Value(..), Expr(..), VarId(..) )
+import DSL.Expr ( Type(..), checkType, Value(..), Expr(..), VarId(..), BinOp(..) )
 
 import Util ( unlines )
 import Prelude hiding ( unlines )
@@ -200,6 +200,7 @@ tests =
         ]
     , testGroup "Type Checking"
         [ testCase "Type checking1" typeChecking1
+        , testCase "Type checking2" typeChecking2
         ]
     , testGroup "To strings"
         [ testCase "simple to DotNet" simpleDotNet
@@ -1889,6 +1890,23 @@ typeChecking1 = doTypeCheck input nameMap expectedOr
                                (ESeq (EVar (VarId 0)) (EVar (VarId 0))))
 
     expectedOr = Right (expectedExpr, TyArr 2 2)
+
+
+typeChecking2 :: Assertion
+typeChecking2 = doTypeCheck input nameMap expectedOr
+    where
+    input = [ "n_sequence ((\\y : Int . y) 2) ((\\y : Int. x) 3)" ]
+
+    nameMap = [("x", (1,1))]
+
+    expectedExpr = EBind (EApp (ELam (EVar (VarId 0))) (ENum 2))
+                         (EBind (EApp (ELam (EPreComputed (1,1))) (ENum 3))
+                            (EIntCase
+                                (EBin Sub (EVar (VarId 1)) (ENum 1))
+                                (EVar (VarId 0))
+                                (ELam (ESeq (EVar (VarId 0)) (EVar (VarId 1))))))
+
+    expectedOr = Right (expectedExpr, TyArr 1 1)
 
 -- data BinOp = Add
 --            | Sub
