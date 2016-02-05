@@ -201,6 +201,7 @@ tests =
     , testGroup "Type Checking"
         [ testCase "Type checking1" typeChecking1
         , testCase "Type checking2" typeChecking2
+        , testCase "Type checking3 (n sequence under lambda)" typeChecking3
         ]
     , testGroup "To strings"
         [ testCase "simple to DotNet" simpleDotNet
@@ -1907,6 +1908,20 @@ typeChecking2 = doTypeCheck input nameMap expectedOr
                                 (ELam (ESeq (EVar (VarId 0)) (EVar (VarId 1))))))
 
     expectedOr = Right (expectedExpr, TyArr 1 1)
+
+typeChecking3 :: Assertion
+typeChecking3 = doTypeCheck input [] expectedOr
+    where
+    input = [ "\\x : Net 1 1 . n_sequence ((\\y : Int . y) 2) ((\\y : Int. x) 3)" ]
+
+    expectedExpr = ELam (EBind (EApp (ELam (EVar (VarId 0))) (ENum 2))
+                        (EBind (EApp (ELam (EVar (VarId 2))) (ENum 3))
+                           (EIntCase
+                               (EBin Sub (EVar (VarId 1)) (ENum 1))
+                               (EVar (VarId 0))
+                               (ELam (ESeq (EVar (VarId 0)) (EVar (VarId 1)))))))
+
+    expectedOr = Right (expectedExpr, TyArr 1 1 :-> TyArr 1 1)
 
 -- data BinOp = Add
 --            | Sub
