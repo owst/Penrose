@@ -51,6 +51,7 @@ import qualified Data.Text as T
 %left '+'
 %left tens
 %left seq
+%right arr
 
 %%
 
