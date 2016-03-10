@@ -1,2 +1,4 @@
 dist/
 .cabal-sandbox
+tags
+cabal.sandbox.config
