@@ -11,7 +11,7 @@ module DSL.ComponentsAndWiringParser
     ) where
 
 #if __GLASGOW_HASKELL__ < 710
-import Control.Applicative ( Alternative, (<|>), (<$>), (<*>), (*>), (<*), many, pure )
+import Control.Applicative ( (<|>), (<$>), (<*>), (*>), (<*), many, pure )
 #else
 import Control.Applicative ( (<|>), many )
 #endif
