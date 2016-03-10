@@ -10,6 +10,7 @@
 - Requires recent GHC and cabal to be installed.
     - Developed with GHC 7.6.3 and cabal 1.18.1.12
     - Tested with GHC 7.8.4 and cabal 1.22.0.0
+    - Tested with GHC 7.10.3 and cabal 1.22.4.0
 
 1. run `cd PATH_TO_PENROSE_REPOSITORY`
 2. run `cabal sandbox init`
