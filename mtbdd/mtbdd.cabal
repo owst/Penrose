@@ -19,7 +19,7 @@ library
                    array,
                    deepseq >= 1.2,
                    transformers >= 0.1,
-                   lens >= 3 && < 4.1,
+                   lens >= 3 && < 4.14,
                    parallel >= 2.2
     Hs-Source-Dirs: src
     Exposed-Modules: MTBDD MTBDD.Internals MTBDD.Make MTBDD.Operation
@@ -46,5 +46,5 @@ Test-Suite tests
                    array,
                    deepseq >= 1.2,
                    transformers >= 0.1,
-                   lens >= 3 && < 4.1,
+                   lens >= 3 && < 4.14,
                    parallel >= 2.2

@@ -59,7 +59,7 @@ library
                          semigroups >= 0.7,
                          filepath >= 1.0,
                          unix-compat >= 0.1,
-                         lens >= 2.0 && < 4.1,
+                         lens >= 2.0 && < 4.14,
                          safe >= 0.2,
                          mtbdd == 0.12
 executable Penrose
@@ -82,7 +82,7 @@ executable Penrose
                          either >= 0.1,
                          deepseq >= 1.1,
                          parallel >= 2.2,
-                         lens >= 2.0 && < 4.1,
+                         lens >= 2.0 && < 4.14,
                          safe >= 0.2,
                          mtbdd == 0.12
 
@@ -113,7 +113,7 @@ Benchmark Benchmark
                          either >= 0.1,
                          deepseq >= 1.1,
                          parallel >= 2.2,
-                         lens >= 2.0 && < 4.1,
+                         lens >= 2.0 && < 4.14,
                          pcre-light >= 0.4,
                          safe >= 0.2,
                          mtbdd == 0.12,
@@ -147,7 +147,7 @@ Test-Suite tests
                    parsec >= 3.0.0,
                    deepseq >= 1.1,
                    parallel >= 2.2,
-                   lens >= 2.0 && < 4.1,
+                   lens >= 2.0 && < 4.14,
                    either >= 0.1,
                    safe >= 0.2,
                    semigroups >= 0.7,
