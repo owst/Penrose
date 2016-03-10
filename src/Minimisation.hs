@@ -1,8 +1,12 @@
-{-# LANGUAGE TupleSections, ScopedTypeVariables #-}
+{-# LANGUAGE TupleSections, ScopedTypeVariables, CPP #-}
 module Minimisation where
 
 import Control.Arrow ( (&&&) )
+
+#if __GLASGOW_HASKELL__ < 710
 import Control.Applicative ( (<$>), Applicative )
+#endif
+
 import Control.Monad ( when )
 -- Eval is a strict identity monad.
 import Control.Parallel.Strategies ( runEval )

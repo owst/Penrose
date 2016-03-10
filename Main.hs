@@ -1,7 +1,10 @@
-{-# LANGUAGE TemplateHaskell #-}
+{-# LANGUAGE TemplateHaskell, CPP #-}
 module Main where
 
+#if __GLASGOW_HASKELL__ < 710
 import Control.Applicative ( (<$>) )
+#endif
+
 import Control.Arrow ( (&&&) )
 import Control.Monad ( unless )
 import Language.Haskell.TH ( reify, Con(NormalC), Dec(DataD), nameBase

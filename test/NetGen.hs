@@ -1,8 +1,12 @@
-{-# LANGUAGE FlexibleInstances #-}
+{-# OPTIONS_GHC -fno-warn-orphans #-} -- For the Arbitrary NetWithBoundaries instance.
+{-# LANGUAGE FlexibleInstances, CPP #-}
 module NetGen where
 
-import Control.Arrow ( (&&&), (***) )
+#if __GLASGOW_HASKELL__ < 710
 import Control.Applicative ( (<$>) )
+#endif
+
+import Control.Arrow ( (&&&), (***) )
 import Control.Lens ( (%~), view )
 import qualified Data.HashSet as HS
 import qualified Data.IntSet as IS
@@ -60,6 +64,7 @@ newtype PortID = PortID Integer
                deriving Show
 
 instance Arbitrary PortID where
+    arbitrary = PortID <$> arbitrary
 
 instance Arbitrary NetWithBoundaries where
     arbitrary = do

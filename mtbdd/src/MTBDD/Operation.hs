@@ -27,7 +27,7 @@ import Data.Monoid ( Monoid, mappend )
 import Data.Set ( Set )
 import qualified Data.Set as S
 
-import Prelude hiding ( (&&), (||), (**), or, not, foldr )
+import Prelude hiding ( (&&), (||), (**), or, not, foldr, foldMap )
 import qualified Prelude
 
 -- TODO: generalise to arbitrary Boolean Algebras

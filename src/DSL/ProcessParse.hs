@@ -1,16 +1,20 @@
-{-# LANGUAGE OverloadedStrings, TupleSections, LambdaCase #-}
+{-# LANGUAGE OverloadedStrings, TupleSections, LambdaCase, CPP #-}
 module DSL.ProcessParse
     ( lookupNames
     , netDefinitionToMarkedNet
     ) where
+
+#if __GLASGOW_HASKELL__ < 710
 import Control.Applicative ( (<$>), (<*>) )
+#endif
+
 import Control.Arrow ( (***) )
 import Control.Lens ( (%~) )
 import Control.Monad ( foldM )
 import Data.Foldable ( foldrM )
 import Data.List ( partition, genericLength, sortBy )
 import Control.Monad.Trans ( lift )
-import Control.Monad.Trans.Reader ( ReaderT, runReaderT, asks )
+import Control.Monad.Trans.Reader ( runReaderT, asks )
 import Control.Monad.Trans.State.Strict ( gets, modify, StateT(..) )
 import qualified Data.HashSet as HS
 import qualified Data.IntSet as IS

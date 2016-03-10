@@ -1,12 +1,20 @@
-{-# LANGUAGE TupleSections, OverloadedStrings #-}
+{-# LANGUAGE TupleSections, OverloadedStrings, CPP #-}
+{-# OPTIONS_GHC -fno-warn-orphans #-} -- For the Eq Value instance.
 {-# OPTIONS_GHC -fno-warn-missing-signatures #-}
 {-# OPTIONS_GHC -fno-warn-name-shadowing #-}
 {-# OPTIONS_GHC -fno-warn-type-defaults #-}
 
-import Control.Arrow ( first, (***) )
+#if __GLASGOW_HASKELL__ < 710
 import Control.Applicative ( (<$>) )
+import Data.Traversable ( sequenceA )
+import Data.Monoid ( Any(..), mempty )
+#else
+import Data.Monoid ( Any(..) )
+#endif
+
+import Control.Arrow ( first, (***) )
 import Control.Lens ( (%~), over )
-import Control.Monad.Identity ( Identity, runIdentity )
+import Control.Monad.Identity ( runIdentity )
 import Control.Monad.Trans.Writer ( runWriterT )
 import Control.Parallel.Strategies ( runEval )
 import qualified Data.Foldable as DF
@@ -14,13 +22,11 @@ import Data.List ( sort, partition )
 import qualified Data.Map.Strict as M ( fromList, map, mapKeys, insertWith
                                       , lookup )
 import Data.Maybe ( fromJust )
-import Data.Monoid ( Any(..), mempty )
 import qualified Data.HashSet as HS
 import qualified Data.IntSet as IS
 import qualified Data.IntMap as IM
 import qualified Data.Set as S
 import qualified Data.Text as T
-import Data.Traversable ( sequenceA )
 import Test.Framework ( defaultMainWithOpts, testGroup )
 import Test.Framework.Providers.HUnit ( testCase, hUnitTestToTests )
 import Test.Framework.Providers.QuickCheck2 ( testProperty )
@@ -1960,6 +1966,7 @@ typeChecking3 = doTypeCheck input [] expectedOr
 instance Eq r => Eq (Value m r) where
     (VBase p) == (VBase q) = p == q
     (VInt i) == (VInt j) = i == j
+    -- Cannot decide equality of function types, so don't try.
     _ == _ = False
 
 

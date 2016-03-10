@@ -1,10 +1,14 @@
-{-# LANGUAGE TupleSections, TemplateHaskell #-}
+{-# LANGUAGE TupleSections, TemplateHaskell, CPP #-}
 module Benchmark where
+
+#if __GLASGOW_HASKELL__ < 710
+import Control.Applicative ( (<$>) )
+#endif
+
 import Language.Haskell.TH ( reify, Con(NormalC), Dec(DataD), nameBase
                            , Exp(LitE), Lit(StringL), Info(TyConI) )
 
 import Control.Arrow ( (***), (&&&) )
-import Control.Applicative ( (<$>) )
 import Control.Monad ( liftM2, forM_ )
 import Data.Maybe ( fromJust )
 import Data.Semigroup ( Semigroup(..) )
@@ -13,13 +17,13 @@ import Data.List.Split ( splitOn )
 import Data.List.NonEmpty ( fromList )
 import Data.Time.Clock ( getCurrentTime )
 import Data.Time.Format ( formatTime )
+import Data.Time.Locale.Compat ( defaultTimeLocale )
 import Safe ( readMay )
 import System.Directory ( createDirectory, setCurrentDirectory
                         , removeDirectoryRecursive )
 import System.Environment ( getArgs, getProgName )
 import System.Exit ( ExitCode(..), exitFailure )
 import System.IO ( hSetBuffering, stdout, BufferMode(..), stderr, hPutStrLn )
-import System.Locale ( defaultTimeLocale )
 import System.Process ( readProcessWithExitCode )
 import System.FilePath ( (</>) )
 import Text.Printf ( printf )

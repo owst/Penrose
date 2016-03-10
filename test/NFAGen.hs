@@ -1,3 +1,4 @@
+{-# OPTIONS_GHC -fno-warn-orphans #-} -- For the Arbitrary NFA instance.
 {-# LANGUAGE FlexibleInstances #-}
 module NFAGen where
 

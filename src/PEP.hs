@@ -1,3 +1,4 @@
+{-# LANGUAGE CPP #-}
 module PEP
     ( pep2Net
     , unparseLLNet
@@ -5,7 +6,10 @@ module PEP
     , llNet2PNML
     ) where
 
+#if __GLASGOW_HASKELL__ < 710
 import Control.Applicative ( (<$>) )
+#endif
+
 import Control.Arrow ( (&&&), (***) )
 import Control.Lens ( (^.), to, (%~), view )
 import Control.Monad ( forM_, unless )
@@ -149,15 +153,24 @@ pep2Net (LLNet _ _ _ ps ts pts arcs _) = do
                            _ -> error $ "LLNet shouldn't generate " ++
                                         "Boundary/Query ports"
 
+toCSV :: [String] -> String
 toCSV = intercalate ", "
+
+toPlaceName :: Int -> String
 toPlaceName = ('p' :) . show
+
+toMarkCount :: WildCardMarks -> String
 toMarkCount Yes = "1"
 toMarkCount No = "0"
 toMarkCount _ = error "Can't handle DontCare using reachability"
+
+markingStr :: WildCardMarking -> String
 markingStr m = toCSV . map (joinWordPair . (toMarkCount *** toPlaceName)) . caredAboutPlaces $ m
 
+joinWordPair :: (String, String) -> String
 joinWordPair (w1, w2) = w1 ++ " " ++ w2
 
+caredAboutPlaces :: WildCardMarking -> [(WildCardMarks, Int)]
 caredAboutPlaces m = filter ((/= DontCare) . fst) $
         zip (markingListToList m) [(1 :: Int)..]
 

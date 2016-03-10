@@ -1,12 +1,16 @@
+{-# LANGUAGE FlexibleContexts, CPP #-}
 module ParseNFA where
 
 import qualified Data.Set as S
 import qualified Data.Map.Strict as M
 
+#if __GLASGOW_HASKELL__ < 710
 import Control.Applicative ( (<$>), (<*>), (<*) )
+#endif
+
 import Control.Monad ( when, (>=>) )
 import Control.Monad.Trans ( lift )
-import Control.Monad.Trans.Either ( EitherT, hoistEither, runEitherT )
+import Control.Monad.Trans.Either ( hoistEither, runEitherT )
 import Data.List ( genericLength )
 import Data.List.NonEmpty ( NonEmpty( (:|) ) )
 import qualified Data.List.NonEmpty as NEL

@@ -1,7 +1,11 @@
-{-# LANGUAGE TupleSections, GADTs, ScopedTypeVariables #-}
+{-# LANGUAGE TupleSections, GADTs, ScopedTypeVariables, CPP #-}
 module NFA where
 
+#if __GLASGOW_HASKELL__ < 710
 import Control.Applicative ( liftA2, (<$>) )
+#else
+import Control.Applicative ( liftA2 )
+#endif
 import Control.Arrow ( (***), (&&&), first )
 import Control.DeepSeq ( NFData(..) )
 import Control.Monad ( liftM )

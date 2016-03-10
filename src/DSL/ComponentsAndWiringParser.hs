@@ -1,4 +1,4 @@
-{-# LANGUAGE OverloadedStrings, LambdaCase, TupleSections #-}
+{-# LANGUAGE OverloadedStrings, LambdaCase, TupleSections, CPP #-}
 module DSL.ComponentsAndWiringParser
     ( parseComponentsAndWiring
     , ComponentsAndWiring(..)
@@ -9,8 +9,13 @@ module DSL.ComponentsAndWiringParser
     , InOutTest(..)
     , parseNetDefinition
     ) where
-import Control.Applicative ( Alternative, (<|>), (<$>), (<*>), (*>), (<*)
-                           , many, pure )
+
+#if __GLASGOW_HASKELL__ < 710
+import Control.Applicative ( Alternative, (<|>), (<$>), (<*>), (*>), (<*), many, pure )
+#else
+import Control.Applicative ( (<|>), many )
+#endif
+
 import Control.Monad.Identity ( Identity )
 import qualified Data.Text as T
 

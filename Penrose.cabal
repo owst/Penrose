@@ -100,7 +100,7 @@ Benchmark Benchmark
                          containers >= 0.5.2,
                          mtl >= 2,
                          time >= 1.1,
-                         old-locale >= 1,
+                         time-locale-compat >= 0.1,
                          transformers >= 0.3,
                          random >= 1.0 && < 2.0,
                          template-haskell >= 2.2,

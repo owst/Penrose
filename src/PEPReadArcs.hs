@@ -3,7 +3,7 @@ module PEPReadArcs where
 import Nets ( LLNetWithReadArcs(..) )
 import Marking ( WildCardMarking )
 import PEP ( unparseLLNet )
-import PEPParser ( LLNet, TransID(..), PlaceID(..) )
+import PEPParser ( TransID(..), PlaceID(..) )
 
 unparseLLNetWithReadArcs :: WildCardMarking -> LLNetWithReadArcs -> String
 unparseLLNetWithReadArcs marking (LLNetWithReadArcs llNet readArcs) =

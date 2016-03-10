@@ -1,9 +1,13 @@
-{-# LANGUAGE TemplateHaskell, TupleSections, GeneralizedNewtypeDeriving, ScopedTypeVariables, DeriveGeneric, TypeSynonymInstances, FlexibleInstances, ViewPatterns #-}
+{-# LANGUAGE TemplateHaskell, TupleSections, GeneralizedNewtypeDeriving, ScopedTypeVariables, DeriveGeneric, TypeSynonymInstances, FlexibleInstances, ViewPatterns, FlexibleContexts, CPP #-}
 {-# OPTIONS_GHC -funbox-strict-fields #-}
 module ProcessExpr where
 
-import Control.Arrow ( second, (***) )
+#if __GLASGOW_HASKELL__ < 710
 import Control.Applicative ( (<$>) )
+import Data.Traversable ( traverse )
+#endif
+
+import Control.Arrow ( second, (***) )
 import Control.DeepSeq ( NFData(..) )
 import Control.Lens ( makeLenses, (%=), use, (.=) )
 import Control.Monad ( when, liftM )
@@ -17,7 +21,6 @@ import Data.Maybe ( fromMaybe, listToMaybe )
 import qualified Data.Map.Strict as M ( lookup, empty, insert, size )
 import Data.Map.Strict ( Map )
 import qualified Data.Set as S
-import Data.Traversable ( traverse )
 import DSL.Expr ( Expr(..), Value(..), BinOp(..), VarId(varToInt)
                 , InterleavingMarkedNet )
 import GHC.Generics ( Generic )
@@ -80,7 +83,7 @@ data StrictTriple = StrictTriple
                         { _st1 :: !Int
                         , _st2 :: !Int
                         , _st3 :: !Int
-                        } deriving Show
+                        } deriving (Show, Generic)
 
 instance NFData StrictTriple
 
@@ -91,7 +94,7 @@ data StrictQuad = StrictQuad
                       , _sq2 :: !Int
                       , _sq3 :: !Int
                       , _sq4 :: !Int
-                      } deriving Show
+                      } deriving (Show, Generic)
 
 instance NFData StrictQuad
 

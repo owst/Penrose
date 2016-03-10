@@ -1,7 +1,11 @@
-{-# LANGUAGE TemplateHaskell, ScopedTypeVariables, TupleSections, TypeSynonymInstances, FlexibleInstances, DeriveGeneric #-}
+{-# OPTIONS_GHC -fno-warn-orphans #-} -- For the Hashable IntSet instance.
+{-# LANGUAGE TemplateHaskell, ScopedTypeVariables, TupleSections, TypeSynonymInstances, FlexibleInstances, DeriveGeneric, CPP #-}
 module Nets where
 
+#if __GLASGOW_HASKELL__ < 710
 import Control.Applicative ( (<$>) )
+#endif
+
 import Control.Monad ( guard )
 import Control.Lens ( makeLenses, (<<%~), _1, _2, (%~) )
 import Data.IntSet ( IntSet )

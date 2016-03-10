@@ -1,8 +1,12 @@
-{-# LANGUAGE TemplateHaskell, OverloadedStrings #-}
+{-# LANGUAGE TemplateHaskell, OverloadedStrings, FlexibleContexts, CPP #-}
 module PEPParser where
 
-import Control.Applicative ( Alternative, (<|>), (<$>), (<*>), (*>), (<*)
-                           , many, pure )
+#if __GLASGOW_HASKELL__ < 710
+import Control.Applicative ( Alternative, (<|>), (<$>), (<*>), (*>), (<*), many, pure )
+#else
+import Control.Applicative ( (<|>), many )
+#endif
+
 import Control.Lens ( makeLenses )
 import Control.Monad ( void, (>=>) )
 import Data.Number.Nat ( Nat, toNat )

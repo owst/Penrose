@@ -1,8 +1,11 @@
-{-# LANGUAGE TupleSections #-}
+{-# LANGUAGE TupleSections, CPP #-}
 module Run where
 
-import Control.Arrow ( first )
+#if __GLASGOW_HASKELL__ < 710
 import Control.Applicative ( (<$>) )
+#endif
+
+import Control.Arrow ( first )
 import Control.DeepSeq ( NFData(..) )
 import Control.Monad ( filterM )
 import Control.Monad.Trans ( lift )

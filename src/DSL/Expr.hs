@@ -1,4 +1,4 @@
-{-# LANGUAGE ScopedTypeVariables, TupleSections, DeriveFunctor, DeriveFoldable, DeriveTraversable #-}
+{-# LANGUAGE ScopedTypeVariables, TupleSections, DeriveFunctor, DeriveFoldable, DeriveTraversable, CPP #-}
 module DSL.Expr
     ( RawExpr(..)
     , Type(..)
@@ -12,13 +12,16 @@ module DSL.Expr
     , TypeCheckError(..)
     ) where
 
+#if __GLASGOW_HASKELL__ < 710
 import Control.Applicative ( (<$>), (<*>) )
+import Data.Foldable ( Foldable )
+import Data.Traversable ( Traversable )
+#endif
+
 import Control.Monad ( when )
 import Control.Monad.Trans ( lift )
 import Control.Monad.Trans.Reader ( ReaderT, runReaderT, Reader, runReader )
 import Control.Monad.Reader ( local, ask )
-import Data.Foldable ( Foldable )
-import Data.Traversable ( Traversable )
 import Safe ( atMay )
 
 import Nets ( NetWithBoundaries(..), MarkedNet )
