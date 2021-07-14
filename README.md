@@ -1,11 +1,11 @@
-#Penrose, a Petri Net reachability checker
+# Penrose, a Petri Net reachability checker
 
-##Authors
+## Authors
 
 - Owen Stephens - owen@owenstephens.co.uk
 - Pawel Sobocinski - ps@ecs.soton.ac.uk
 
-##Installation
+## Installation
 
 - Requires recent GHC and cabal to be installed.
     - Developed with GHC 7.6.3 and cabal 1.18.1.12
@@ -21,7 +21,7 @@
 
 Penrose then exists as ./dist/build/Penrose/Penrose
 
-##Usage
+## Usage
 
 Penrose accepts net decompositions in the .netdecomp format. Several examples
 are provided in the examples folder.
@@ -34,7 +34,7 @@ Usage:
 
 where the accepted values of OUTPUT_TYPE are shown by passing `--help` to Penrose
 
-##Benchmarking
+## Benchmarking
 
 In-built benchmarking against punf/clp[1][2], cunf/cna[3], LOLA[4], MARCIE[5] and TAPAAL[6] are
 enabled by passing the `--enable-benchmarks` flag to cabal configure in step 6.  above.
